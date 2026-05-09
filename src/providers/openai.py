@@ -3,6 +3,7 @@ from anthropic import Anthropic
 
 from src.types import ModelConfig, ModelResponse
 from src.providers.openai_runner import OpenAIRequestRunner
+from src.providers.local import call_local_llm
 
 def call_openai_internal(
     client: OpenAI,
