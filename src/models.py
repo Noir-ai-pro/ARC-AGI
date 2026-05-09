@@ -16,7 +16,13 @@ from src.types import (
 from src.providers.openai import call_openai_internal
 from src.providers.anthropic import call_anthropic
 from src.providers.gemini import call_gemini
-from src.providers.local import call_local_llm, get_kaggle_model_path
+from src.providers.local import (
+    call_local_llm, 
+    get_kaggle_model_path,
+    get_arc_competition_data_path,
+    check_kaggle_environment,
+    ARC_COMPETITION_DATA_PATH,
+)
 
 def parse_model_arg(model_arg: str) -> ModelConfig:
     if model_arg not in SUPPORTED_MODELS:
