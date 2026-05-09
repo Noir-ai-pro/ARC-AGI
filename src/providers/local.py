@@ -26,6 +26,15 @@ from src.errors import RetryableProviderError, NonRetryableProviderError
 
 logger = get_logger("providers.local")
 
+__all__ = [
+    "LocalLLMProvider",
+    "call_local_llm",
+    "get_kaggle_model_path",
+    "get_arc_competition_data_path",
+    "check_kaggle_environment",
+    "ARC_COMPETITION_DATA_PATH",
+]
+
 # Cache for loaded models to avoid reloading
 _MODEL_CACHE = {}
 
@@ -316,6 +325,9 @@ def call_local_llm(
     return response
 
 
+# Standard Kaggle competition data path
+ARC_COMPETITION_DATA_PATH = "/kaggle/input/competitions/arc-prize-2026-arc-agi-2/"
+
 # Convenience function for common Kaggle model paths
 def get_kaggle_model_path(model_type: str) -> str:
     """
@@ -342,3 +354,51 @@ def get_kaggle_model_path(model_type: str) -> str:
         raise ValueError(f"Unknown model type: {model_type}. Available: {list(kaggle_models.keys())}")
     
     return kaggle_models[model_type]
+
+
+def get_arc_competition_data_path() -> str:
+    """
+    Get the path to ARC-AGI-2 competition data on Kaggle.
+    
+    Returns:
+        Path to competition data directory
+    """
+    return ARC_COMPETITION_DATA_PATH
+
+
+def check_kaggle_environment() -> Dict[str, Any]:
+    """
+    Check if running in Kaggle environment and verify available paths.
+    
+    Returns:
+        Dictionary with environment information
+    """
+    import os
+    
+    result = {
+        "is_kaggle": os.path.exists("/kaggle"),
+        "competition_data_available": False,
+        "competition_data_path": None,
+        "available_models": [],
+    }
+    
+    # Check competition data
+    if os.path.exists(ARC_COMPETITION_DATA_PATH):
+        result["competition_data_available"] = True
+        result["competition_data_path"] = ARC_COMPETITION_DATA_PATH
+    
+    # Check available models
+    for model_type, path in {
+        "llama-3-8b": "/kaggle/input/meta-llama-3-8b-instruct/",
+        "llama-3-70b": "/kaggle/input/meta-llama-3-70b-instruct/",
+        "mistral-7b": "/kaggle/input/mistral-7b-instruct/",
+        "phi-3-mini": "/kaggle/input/phi-3-mini-4k-instruct/",
+        "gemma-2b": "/kaggle/input/gemma-2b-it/",
+        "gemma-7b": "/kaggle/input/gemma-7b-it/",
+        "qwen-2-7b": "/kaggle/input/qwen-2-7b-instruct/",
+        "yi-34b": "/kaggle/input/yi-34b-chat/",
+    }.items():
+        if os.path.exists(path):
+            result["available_models"].append(model_type)
+    
+    return result
