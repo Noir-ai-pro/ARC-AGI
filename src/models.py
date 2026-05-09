@@ -16,6 +16,7 @@ from src.types import (
 from src.providers.openai import call_openai_internal
 from src.providers.anthropic import call_anthropic
 from src.providers.gemini import call_gemini
+from src.providers.local import call_local_llm, get_kaggle_model_path
 
 def parse_model_arg(model_arg: str) -> ModelConfig:
     if model_arg not in SUPPORTED_MODELS:
@@ -67,6 +68,19 @@ def parse_model_arg(model_arg: str) -> ModelConfig:
         parts = model_arg.split("-")
         effort = parts[-1]
         return ModelConfig("google", GEMINI_3_BASE, effort)
+
+    # Local models for Kaggle offline mode
+    if model_arg.startswith("local-"):
+        model_type = model_arg.replace("local-", "")
+        try:
+            model_path = get_kaggle_model_path(model_type)
+        except ValueError:
+            # Allow custom paths like local-/custom/path
+            if model_type.startswith("/"):
+                model_path = model_type
+            else:
+                raise ValueError(f"Unknown local model type: {model_type}")
+        return ModelConfig("local", model_path, model_type)
 
     raise ValueError(f"Unknown model format: {model_arg}")
 
@@ -174,6 +188,22 @@ def call_model(
             model_alias=model_arg,
             timing_tracker=timings,
             enable_code_execution=enable_code_execution
+        )
+    elif config.provider == "local":
+        # Local model for Kaggle offline mode
+        response = call_local_llm(
+            model_path=config.base_model,
+            prompt=prompt,
+            config=config,
+            image_path=image_path,
+            return_strategy=return_strategy,
+            verbose=verbose,
+            task_id=task_id,
+            test_index=test_index,
+            run_timestamp=run_timestamp,
+            model_alias=model_arg,
+            timing_tracker=timings,
+            enable_code_execution=enable_code_execution,
         )
     else:
         raise ValueError(f"Unknown provider {config.provider}")

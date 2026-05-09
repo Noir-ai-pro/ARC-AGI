@@ -72,6 +72,15 @@ ORDERED_MODELS = [
     "claude-opus-4.5-thinking-60000",
     "gemini-3-low",
     "gemini-3-high",
+    # Local models for Kaggle offline mode
+    "local-llama-3-8b",
+    "local-llama-3-70b",
+    "local-mistral-7b",
+    "local-phi-3-mini",
+    "local-gemma-2b",
+    "local-gemma-7b",
+    "local-qwen-2-7b",
+    "local-yi-34b",
 ]
 SUPPORTED_MODELS: Set[str] = set(ORDERED_MODELS)
 
