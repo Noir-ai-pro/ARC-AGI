@@ -1,0 +1,35 @@
+# Requirements for Kaggle with Local LLMs
+# Based on requirements.txt but optimized for offline local inference
+
+# Core ML libraries
+torch>=2.0.0
+transformers>=4.40.0
+accelerate>=0.25.0
+sentencepiece>=0.1.99
+protobuf>=3.20.0
+
+# Quantization support (optional, saves memory)
+bitsandbytes>=0.41.0
+
+# Image processing (for grid visualization)
+Pillow>=10.0.0
+opencv-python>=4.8.0
+
+# Utilities
+numpy>=1.24.0
+scipy>=1.10.0
+
+# HTTP client (kept for compatibility)
+httpx>=0.24.0
+
+# Type checking
+pydantic>=2.0.0
+
+# Optional: Better GPU utilization
+flash-attn>=2.3.0  # Requires CUDA, install separately if needed
+
+# Note: Removed API-dependent packages
+# - openai (not needed for local mode)
+# - anthropic (not needed for local mode)  
+# - google-genai (not needed for local mode)
+# Can keep them installed if you want hybrid API+local mode
